@@ -103,6 +103,9 @@ cd AI-Codereview-Gitlab
 
 ```bash
 pip install -r requirements.txt
+uv run python api.py 
+uv run streamlit run ui.py --server.port 5002
+ 
 ```
 
 **3. 配置环境变量**
