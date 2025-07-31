@@ -1,17 +1,19 @@
 # 使用官方的 Python 基础镜像
-FROM python:3.10-slim AS base
+FROM python:3.12-slim AS base
 
 # 设置工作目录
 WORKDIR /app
 
-# 安装 supervisord 作为进程管理工具
-RUN apt-get update && apt-get install -y --no-install-recommends supervisor && rm -rf /var/lib/apt/lists/*
+# 安装 supervisord 和 uv
+RUN apt-get update && apt-get install -y --no-install-recommends supervisor curl && rm -rf /var/lib/apt/lists/*
+ADD --chmod=755 https://github.com/astral-sh/uv/releases/latest/download/uv-installer.sh /install.sh
+RUN /install.sh && rm /install.sh
 
 # 复制项目文件&创建必要的文件夹
-COPY requirements.txt .
+COPY pyproject.toml uv.lock ./
 
 # 安装依赖
-RUN pip install --no-cache-dir -r requirements.txt
+RUN /root/.cargo/bin/uv sync --frozen
 
 RUN mkdir -p log data conf
 COPY biz ./biz
